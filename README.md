@@ -12,6 +12,6 @@
 
 ## Download app
 - I have built this only for Android
-  - You can download the [APK here](./app-release.apk)
+  - You can download the [APK here](https://github.com/madhavanmalolan/todo-screenshots/raw/master/app-release.apk)
 - I can use some help for iOS 
 - I will publish this to appstores soon too!
