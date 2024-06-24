@@ -8,6 +8,10 @@ import com.facebook.react.ReactActivityDelegate
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.fabricEnabled
 import com.facebook.react.defaults.DefaultReactActivityDelegate
 
+import com.facebook.react.modules.core.DeviceEventManagerModule
+import android.content.Intent
+import android.net.Uri
+
 import expo.modules.ReactActivityDelegateWrapper
 
 class MainActivity : ReactActivity() {
@@ -16,6 +20,7 @@ class MainActivity : ReactActivity() {
     // coloring the background, status bar, and navigation bar.
     // This is required for expo-splash-screen.
     setTheme(R.style.AppTheme);
+    intent?.let { handleIntent(it) }
     super.onCreate(null)
   }
 
@@ -58,4 +63,24 @@ class MainActivity : ReactActivity() {
       // because it's doing more than [Activity.moveTaskToBack] in fact.
       super.invokeDefaultOnBackPressed()
   }
+
+      override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        intent?.let { handleIntent(it) }
+    }
+
+    private fun handleIntent(intent: Intent) {
+        if (Intent.ACTION_SEND == intent.action && intent.type != null) {
+            if (intent.type!!.startsWith("image/")) {
+                val imageUri: Uri? = intent.getParcelableExtra(Intent.EXTRA_STREAM)
+                imageUri?.let { passUriToJS(it.toString()) }
+            }
+        }
+    }
+
+    private fun passUriToJS(uri: String) {
+        reactInstanceManager.currentReactContext
+            ?.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
+            ?.emit("ImageShared", uri)
+    }
 }

@@ -1,5 +1,5 @@
 {
-  "name": "todo-images",
+  "name": "todo-screenshots",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
@@ -9,10 +9,15 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@react-native-async-storage/async-storage": "1.23.1",
     "expo": "~51.0.14",
+    "expo-image-picker": "~15.0.5",
+    "expo-sqlite": "^14.0.3",
     "expo-status-bar": "~1.12.1",
     "react": "18.2.0",
-    "react-native": "0.74.2"
+    "react-native": "0.74.2",
+    "react-native-deck-swiper": "^2.0.17",
+    "react-native-paper": "^5.12.3"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"

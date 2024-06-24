@@ -1,8 +1,28 @@
 {
   "expo": {
-    "name": "todo-images",
-    "slug": "todo-images",
-    "version": "1.0.0"
-  },
-  "name": "todo-images"
+    "name": "Todo Screenshots",
+    "slug": "todo-screenshots",
+    "version": "1.0.0",
+    "icon": "./logo.png",
+    "platforms": ["ios", "android"],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "xyz.madhavanmalolan.todoscreenshots"
+    },
+    "android": {
+      "package": "xyz.madhavanmalolan.todoscreenshots",
+      "intentFilters": [
+        {
+          "action": "android.intent.action.SEND",
+          "category": [
+            "android.intent.category.DEFAULT"
+          ],
+          "data": {
+            "mimeType": "image/*"
+          }
+        }
+      ]
+    }
+  
+  }
 }
