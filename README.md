@@ -11,6 +11,8 @@
 3. Swipe right to mark as done
 
 ## Download app
+[Demo](https://www.loom.com/share/34506214ea8e41a69dea2aad3424cd32)
+
 - I have built this only for Android
   - You can download the [APK here](https://github.com/madhavanmalolan/todo-screenshots/raw/master/app-release.apk)
 - I can use some help for iOS 
