@@ -6,6 +6,8 @@ import * as ImagePicker from 'expo-image-picker';
 import Swiper from 'react-native-deck-swiper';
 import * as SQLite from 'expo-sqlite';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { request, PERMISSIONS, RESULTS } from 'react-native-permissions';
+
 const { DeviceEventManagerModule } = NativeModules;
 console.log('SQLite', SQLite);  
 const db = SQLite.openDatabaseSync('todos');
@@ -14,8 +16,46 @@ export default function App() {
   const [loading, setLoading] = React.useState(true);
   const [todos, setTodos] = React.useState([]);
   const [isFirstLoad, setIsFirstLoad] = React.useState(true);
+  const [isPermissionGranted, setIsPermissionGranted] = React.useState(true);
 
+  const requestPermissions = async () => {
+    const permissionGranted = false;
+    if (Platform.OS === 'ios') {
+      const result = await request(PERMISSIONS.IOS.PHOTO_LIBRARY);
+      if (result === RESULTS.GRANTED) {
+        console.log('Photo library permission granted');
+        setIsPermissionGranted(true);
+      }
+      else {
+        alert("Please grant access to photo library to continue. The app reads the screenshots from your photo library.")
+      }
+    } else if (Platform.OS === 'android') {
+      if (Platform.Version >= 33) {
+        const imageResult = await request(PERMISSIONS.ANDROID.READ_MEDIA_IMAGES);
+        const videoResult = await request(PERMISSIONS.ANDROID.READ_MEDIA_VIDEO);
+        if (imageResult === RESULTS.GRANTED && videoResult === RESULTS.GRANTED) {
+          console.log('Media permissions granted');
+          setIsPermissionGranted(true);
+        }
+        else {
+          alert("Please grant access to media to continue. The app reads the screenshots from your media.")
+        }
+      } else {
+        const result = await request(PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE);
+        if (result === RESULTS.GRANTED) {
+          console.log('Storage permission granted');
+          setIsPermissionGranted(true);
+        }
+        else {
+          alert("Please grant access to storage to continue. The app reads the screenshots from your storage.")
+        }
+      }
+    }
+  };
+  
   useEffect(() => {
+
+    requestPermissions();
     
     db.execAsync('CREATE TABLE IF NOT EXISTS todos (id INTEGER PRIMARY KEY AUTOINCREMENT, image TEXT, status TEXT, timestamp TEXT);').then(() => {
       fetchTodos();
@@ -101,7 +141,13 @@ export default function App() {
   return (
     <View style={styles.container}>
       <StatusBar style="auto" />
-      
+      {
+        !isPermissionGranted?<View style={styles.loadingContainer}>
+          <ActivityIndicator />
+          <Text> Waiting for access to media storage </Text>
+        </View>: null
+
+      }
       {loading ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#0000ff" />
@@ -111,13 +157,13 @@ export default function App() {
           infinite={true}
           cards={todos}
           renderCard={(todo) => (
-            <TouchableOpacity onPress={() => openImage(todo.image)}>
-            <Card style={{ height: '100%' }}>
-              <Card.Cover source={{ uri: todo.image }} fadeDuration={0} resizeMode='contain' style={{ height: '95%'}} />
-              <Card.Content>
-                <Text style={{marginTop: 4}}>{timeAgo(todo.timestamp)}</Text>
-              </Card.Content>
-            </Card>
+            <TouchableOpacity onPress={() => openImage(todo.image)} >
+              <Card style={{ height: '100%' }}>
+                <Card.Cover source={{ uri: todo.image }} fadeDuration={0} resizeMode='contain' style={{ height: '95%'}} />
+                <Card.Content>
+                  <Text style={{marginTop: 4}}>{timeAgo(todo.timestamp)}</Text>
+                </Card.Content>
+              </Card>
             </TouchableOpacity>
           )}
           keyExtractor={(todo) => todo.id.toString()}
